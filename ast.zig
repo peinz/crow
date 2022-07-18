@@ -69,7 +69,7 @@ pub const Expression = union(enum) {
     block: Block,
     pub fn evaluate(self: @This(), context: Context) i32 {
         return switch (self) {
-            .literal => self.literal.value,
+            .literal => |value| value.value,
             .variable => context.get(self.variable.name),
             .binaryExpression => {
                 const lhsResult = self.binaryExpression.lhs.evaluate(context);
@@ -102,7 +102,7 @@ pub const Expression = union(enum) {
     pub fn dump(self: @This(), indent: i8) FooErrors!void {
         _ = indent;
         _ = switch (self) {
-            .literal => try printIndented("literal({d})\n", .{self.literal.value}, indent),
+            .literal => |value| try printIndented("literal({d})\n", .{value.value}, indent),
             .variable => try printIndented("variable('{s}')\n", .{self.variable.name}, indent),
             .binaryExpression => {
                 try printIndented("binaryExpression('{s}')\n", .{self.binaryExpression.opr}, indent);
