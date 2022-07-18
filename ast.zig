@@ -34,7 +34,7 @@ pub const BinaryExpression = struct {
 };
 
 pub const Block = struct {
-    statements: []const Statement,
+    statements: std.ArrayList(Statement),
 };
 
 pub const FooErrors = error{
@@ -85,7 +85,7 @@ pub const Expression = union(enum) {
             .block => {
                 var result: i32 = 0;
                 // TODO: scopedContext = context.spawnNewContext();
-                for (self.block.statements) |statement| {
+                for (self.block.statements.items) |statement| {
                     if (statement == Statement.constantDeclaration) {
                         const name = statement.constantDeclaration.constantName;
                         const value = statement.constantDeclaration.expression.evaluate(context);
@@ -113,7 +113,7 @@ pub const Expression = union(enum) {
             },
             .block => {
                 try printIndented("block\n", .{}, indent);
-                for (self.block.statements) |statement| {
+                for (self.block.statements.items) |statement| {
                     if (statement == Statement.constantDeclaration) {
                         try printIndented("- constantDeclaration('{s}')\n", .{statement.constantDeclaration.constantName}, indent + 2);
                         try statement.constantDeclaration.expression.dump(indent + 6);

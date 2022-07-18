@@ -6,6 +6,9 @@ const Context = ctx.Context;
 const ast = @import("./ast.zig");
 
 pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+
     const n1 = ast.Literal{ .value = 2 };
     const n2 = ast.Literal{ .value = 23 };
     const n1Exp = ast.Expression{ .literal = n1 };
@@ -13,15 +16,15 @@ pub fn main() !void {
     const variable_expression = ast.Expression{ .variable = ast.Variable{ .name = "abc" } };
     const b = ast.Expression{ .binaryExpression = ast.BinaryExpression{ .opr = .Multiply, .lhs = &variable_expression, .rhs = &n2Exp } };
 
-    const statements = [_]ast.Statement{
+    var statements = [_]ast.Statement{
         ast.Statement{ .constantDeclaration = ast.ConstantDeclaration{ .constantName = "abc", .expression = &n1Exp } },
         ast.Statement{ .returnStatement = ast.ReturnStatement{ .expression = &b } },
     };
-    const block = ast.Block{ .statements = &statements };
+    var statement_list = std.ArrayList(ast.Statement).fromOwnedSlice(allocator, statements[0..]);
+    const block = ast.Block{ .statements = statement_list };
 
     const bE = ast.Expression{ .block = block };
 
-    const allocator = std.heap.page_allocator;
     var scope = std.StringHashMap(i32).init(allocator);
     const context = Context.init(&scope);
 
