@@ -11,12 +11,13 @@ pub const ReturnStatement = struct {
     expression: *const Expression,
 };
 
-pub const Operator = enum {
-    Plus,
-    Minus,
-    Multiply,
-    Divide,
-    Modulo,
+pub const Oparator = enum {
+    plus,
+    minus,
+    multiply,
+    divide,
+    modulo,
+    assignment,
 };
 
 pub const Literal = struct {
@@ -30,7 +31,7 @@ pub const Variable = struct {
 pub const BinaryExpression = struct {
     lhs: *const Expression,
     rhs: *const Expression,
-    opr: Operator,
+    opr: Oparator,
 };
 
 pub const Block = struct {
@@ -75,11 +76,12 @@ pub const Expression = union(enum) {
                 const lhsResult = self.binaryExpression.lhs.evaluate(context);
                 const rhsResult = self.binaryExpression.rhs.evaluate(context);
                 return switch (self.binaryExpression.opr) {
-                    .Plus => lhsResult + rhsResult,
-                    .Minus => lhsResult - rhsResult,
-                    .Multiply => lhsResult * rhsResult,
-                    .Divide => @divFloor(lhsResult, rhsResult),
-                    .Modulo => @mod(lhsResult, rhsResult),
+                    .plus => lhsResult + rhsResult,
+                    .minus => lhsResult - rhsResult,
+                    .multiply => lhsResult * rhsResult,
+                    .divide => @divFloor(lhsResult, rhsResult),
+                    .modulo => @mod(lhsResult, rhsResult),
+                    else => @panic("should not happen"),
                 };
             },
             .block => {

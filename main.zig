@@ -14,7 +14,7 @@ pub fn main() !void {
     const n1Exp = ast.Expression{ .literal = n1 };
     const n2Exp = ast.Expression{ .literal = n2 };
     const variable_expression = ast.Expression{ .variable = ast.Variable{ .name = "abc" } };
-    const b = ast.Expression{ .binaryExpression = ast.BinaryExpression{ .opr = .Multiply, .lhs = &variable_expression, .rhs = &n2Exp } };
+    const b = ast.Expression{ .binaryExpression = ast.BinaryExpression{ .opr = .multiply, .lhs = &variable_expression, .rhs = &n2Exp } };
 
     var statements = [_]ast.Statement{
         ast.Statement{ .constantDeclaration = ast.ConstantDeclaration{ .constantName = "abc", .expression = &n1Exp } },
