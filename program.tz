@@ -1,0 +1,5 @@
+{
+    val hij = 9
+    val dfg = 2 + hij
+    return dfg * 23
+}

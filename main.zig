@@ -4,11 +4,15 @@ const expect = std.testing.expect;
 const ctx = @import("./context.zig");
 const Context = ctx.Context;
 const ast = @import("./ast.zig");
+const p = @import("./parser.zig");
+const Parser = p.Parser;
 
 pub fn main() !void {
+    const stdout = std.io.getStdOut().writer();
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
+    // sytanx tree in code
     const n1 = ast.Literal{ .value = 2 };
     const n2 = ast.Literal{ .value = 23 };
     const n1Exp = ast.Expression{ .literal = n1 };
@@ -27,27 +31,17 @@ pub fn main() !void {
 
     var scope = std.StringHashMap(i32).init(allocator);
     const context = Context.init(&scope);
-
     const result = bE.evaluate(context);
+    // try bE.dump(0);
+    _ = result;
 
-    try bE.dump(0);
+    // parse + dump
+    const parser = try Parser.init(allocator);
+    const parsed_ast = try parser.parse("program.tz");
+    const exp = ast.Expression{ .block = parsed_ast };
 
-    const stdout = std.io.getStdOut().writer();
-    try stdout.print("Hello, {d}!\n", .{result});
-}
+    try exp.dump(0);
 
-const Color = enum {
-    auto,
-    off,
-    on,
-};
-
-test "enum literals with switch" {
-    const color = Color.off;
-    const result = switch (color) {
-        .auto => false,
-        .on => false,
-        .off => true,
-    };
-    try expect(result);
+    const result2 = exp.evaluate(context);
+    try stdout.print("result: {d}\n", .{result2});
 }
